@@ -14,7 +14,7 @@ const ScheduledEmails = () => {
 
     setUserEmail(emailFromStorage);
 
-    fetch(`http://localhost:5000/api/emails/all?userEmail=${emailFromStorage}`)
+    fetch(`https://datelock.onrender.com/api/emails/all?userEmail=${emailFromStorage}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
