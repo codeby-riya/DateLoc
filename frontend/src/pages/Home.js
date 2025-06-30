@@ -8,7 +8,7 @@ const Home = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    sgubject: '',
+    subject: '',
     message: '',
     datetime: '',
     location: ''
@@ -24,7 +24,7 @@ const Home = () => {
       }
 
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/google", {
+        const res = await axios.post("https://datelock.onrender.com/api/auth/google", {
           code: code
         });
 
@@ -60,7 +60,7 @@ const Home = () => {
       sender: userEmail
     };
 
-    const res = await fetch("http://localhost:5000/api/emails/schedule", {
+    const res = await fetch("https://datelock.onrender.com/api/emails/schedule", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
