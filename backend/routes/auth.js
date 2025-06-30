@@ -1,4 +1,3 @@
-
 const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
@@ -8,7 +7,8 @@ const Email = require('../models/emailModel');
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-const REDIRECT_URI = 'http://localhost:3000';
+// Update this to the deployed frontend URI
+const REDIRECT_URI = 'https://datelock.vercel.app';
 
 router.post('/google', async (req, res) => {
   const { code } = req.body;
@@ -24,14 +24,13 @@ router.post('/google', async (req, res) => {
 
     const { access_token, refresh_token, id_token } = tokenRes.data;
 
-    // Get user info
     const userInfo = await axios.get(`https://www.googleapis.com/oauth2/v2/userinfo`, {
       headers: { Authorization: `Bearer ${access_token}` }
     });
 
     const email = userInfo.data.email;
 
-    // Store or update refresh_token associated with user email
+    // Save the refresh token for this user's email
     await Email.updateMany(
       { sender: email },
       { $set: { senderRefreshToken: refresh_token } }
