@@ -13,41 +13,42 @@ const Home = () => {
     datetime: '',
     location: ''
   });
+const login = useGoogleLogin({
+  flow: 'auth-code',
+  onSuccess: async (tokenResponse) => {
+    const code = tokenResponse.code;
+    if (!code) {
+      alert("❌ Google login failed: No auth code returned.");
+      return;
+    }
 
-  const login = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (tokenResponse) => {
-      const code = tokenResponse.code;
-      if (!code) {
-        alert("❌ Google login failed: No auth code returned.");
-        return;
+    try {
+      const res = await axios.post("https://datelock.onrender.com/api/auth/google", {
+        code: code
+      });
+
+      if (res.data && res.data.email) {
+        setUserEmail(res.data.email);
+        setIsAuthenticated(true);
+        localStorage.setItem('userEmail', res.data.email);
+        alert("✅ Logged in as " + res.data.email);
+      } else {
+        alert("❌ Backend did not return email.");
       }
 
-      try {
-        const res = await axios.post("https://datelock.onrender.com/api/auth/google", {
-          code: code
-        });
+    } catch (error) {
+      console.error('Backend login error:', error);
+      alert("❌ Login failed: Backend error");
+    }
+  },
+  onError: () => {
+    alert("❌ Google login popup failed.");
+  },
+  scope: 'https://www.googleapis.com/auth/gmail.send',
+  redirect_uri: 'https://datelock.vercel.app'  // ✅ Add this!
+});
 
-        if (res.data && res.data.email) {
-          setUserEmail(res.data.email);
-          setIsAuthenticated(true);
-          localStorage.setItem('userEmail', res.data.email);
-          alert("✅ Logged in as " + res.data.email);
-        } else {
-          alert("❌ Backend did not return email.");
-        }
-
-      } catch (error) {
-        console.error('Backend login error:', error);
-        alert("❌ Login failed: Backend error");
-      }
-    },
-    onError: () => {
-      alert("❌ Google login popup failed.");
-    },
-    scope: 'https://www.googleapis.com/auth/gmail.send'
-  });
-
+ 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
